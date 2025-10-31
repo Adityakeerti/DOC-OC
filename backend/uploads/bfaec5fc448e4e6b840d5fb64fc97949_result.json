@@ -1,0 +1,63 @@
+{
+  "input_image": "F:\\CODING\\DOC OC V5\\Final Project\\backend\\uploads\\bfaec5fc448e4e6b840d5fb64fc97949.png",
+  "preprocessing": {
+    "status": "success",
+    "crop_coordinates": [
+      35,
+      339,
+      579,
+      636
+    ],
+    "processed_image_shape": [
+      297,
+      544,
+      3
+    ],
+    "preprocessed_image": "F:\\CODING\\DOC OC V5\\Final Project\\backend\\uploads\\bfaec5fc448e4e6b840d5fb64fc97949_preprocessed.jpg"
+  },
+  "logo_detection": {
+    "status": "success",
+    "board_id": 2,
+    "board_name": "ICSE",
+    "detected": true
+  },
+  "face_detection": {
+    "status": "success",
+    "photo_detected": 0,
+    "board": "ICSE"
+  },
+  "table_detection": {
+    "status": "success",
+    "tables_found": 1,
+    "has_tables": true,
+    "table_coordinates": [
+      {
+        "table_id": 1,
+        "table_type": "Marks Table",
+        "confidence": 0.9784204363822937,
+        "coordinates": {
+          "x1": 34.36986541748047,
+          "y1": 379.5921936035156,
+          "x2": 576.7573852539062,
+          "y2": 735.76806640625
+        },
+        "width": 542.3875198364258,
+        "height": 356.1758728027344
+      },
+      {
+        "table_id": 2,
+        "table_type": "Information Table",
+        "confidence": 0.5271986126899719,
+        "coordinates": {
+          "x1": 26.6585693359375,
+          "y1": 139.90591430664062,
+          "x2": 266.5565185546875,
+          "y2": 350.6008605957031
+        },
+        "width": 239.89794921875,
+        "height": 210.6949462890625
+      }
+    ]
+  },
+  "overall_status": "valid_marksheet"
+}

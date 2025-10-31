@@ -1,0 +1,63 @@
+{
+  "input_image": "F:\\CODING\\DOC OC V5\\Final Project\\backend\\uploads\\906d82ae6a214c91ae113ffec8830080.png",
+  "preprocessing": {
+    "status": "success",
+    "crop_coordinates": [
+      28,
+      12,
+      521,
+      685
+    ],
+    "processed_image_shape": [
+      673,
+      493,
+      3
+    ],
+    "preprocessed_image": "F:\\CODING\\DOC OC V5\\Final Project\\backend\\uploads\\906d82ae6a214c91ae113ffec8830080_preprocessed.jpg"
+  },
+  "logo_detection": {
+    "status": "success",
+    "board_id": 0,
+    "board_name": "Uttarakhand",
+    "detected": true
+  },
+  "face_detection": {
+    "status": "success",
+    "photo_detected": 1,
+    "board": "Uttarakhand"
+  },
+  "table_detection": {
+    "status": "success",
+    "tables_found": 1,
+    "has_tables": true,
+    "table_coordinates": [
+      {
+        "table_id": 1,
+        "table_type": "Marks Table",
+        "confidence": 0.9805220365524292,
+        "coordinates": {
+          "x1": 61.258888244628906,
+          "y1": 480.53741455078125,
+          "x2": 490.8531799316406,
+          "y2": 617.0057983398438
+        },
+        "width": 429.5942916870117,
+        "height": 136.4683837890625
+      },
+      {
+        "table_id": 2,
+        "table_type": "Information Table",
+        "confidence": 0.5638799667358398,
+        "coordinates": {
+          "x1": 73.38597106933594,
+          "y1": 318.31280517578125,
+          "x2": 458.25341796875,
+          "y2": 411.4915466308594
+        },
+        "width": 384.86744689941406,
+        "height": 93.17874145507812
+      }
+    ]
+  },
+  "overall_status": "valid_marksheet"
+}
