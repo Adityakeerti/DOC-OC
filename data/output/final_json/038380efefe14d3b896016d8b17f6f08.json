@@ -1,0 +1,21 @@
+{
+  "college": {
+    "course": "BACHELOR OF TECHNOLOGY (COMPUTER SCIENCE AND ENGINEERING) - IV SEMESTER EXAMINA",
+    "semester": "IV",
+    "session": null
+  },
+  "student": {
+    "name": "ADITYAKEERTI",
+    "father_name": "SHYAMA CHARAN",
+    "enrollment_no": "PV-23180236",
+    "roll_no": "2318236"
+  },
+  "subjects": [],
+  "result": {
+    "total_credits_registered": 22,
+    "total_credits_earned": 22,
+    "sgpa": null,
+    "cgpa": null,
+    "status": "PASS"
+  }
+}
