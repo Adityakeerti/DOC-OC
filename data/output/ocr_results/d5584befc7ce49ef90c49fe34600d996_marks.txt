@@ -1,0 +1,23 @@
+
+                                                   प्रावांक MARKS OBTAINED 
+ विषय कोड 
+                       विषय                                                      स्थितीय ग्रेड 
+  SUB.                                             आं. मु. 
+                     SUBJECT                               योग     योग (शब्दों में) POSITIONAL 
+  CODE                                              IA/                            GRADE 
+                                          THEORY         TOTAL 
+                                                   HT. PR.      TOTAL (IN WORDS) 
+
+    301   ENGLISH CORE                       074    017   091     NINETY ONE         A2 
+    054   BUSINESS STUDIES                   062     020 082      EIGHTY TWO          B1 
+    055   ACCOUNTANCY                        039     019   058    FIFTY EIGHT         C2 
+    030   ECONOMICS                          044     020   064    SIXTY FOUR          C1 
+    048   PHYSICAL EDUCATION                 060    030    090    NINETY              A2 
+    041   MATHEMATICS                        026     015   041    FORTY ONE           D2 
+   500   WORK EXPERIENCE                                                              B2 
+   502   HEALTH & PHYSICAL EDUCATION                                                  A1 
+   503   GENERAL STUDIES                                                              B2 
+
+संक्षिप्तियों का अर्थ : Abbreviations 
+AB         Absent 
+<<<

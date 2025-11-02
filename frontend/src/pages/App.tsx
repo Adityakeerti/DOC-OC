@@ -16,7 +16,7 @@ export default function App() {
   const [data12, setData12] = useState<any | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [verified, setVerified] = useState(false)
-  const [semCount, setSemCount] = useState<number>(1)
+  const [semCount, setSemCount] = useState<string>('')
   const [semCursor, setSemCursor] = useState<number>(1)
   const [semesterResults, setSemesterResults] = useState<Record<number, any>>({}) // sem number -> result
   const [currentResult, setCurrentResult] = useState<any | null>(null)
@@ -84,7 +84,8 @@ export default function App() {
       // Semester preview: move to next semester or review
       if (currentResultType === 'sem') {
         const next = semCursor + 1
-        if (next <= Math.max(1, semCount - 1)) {
+        const semNum = parseInt(semCount.trim() || '1', 10) || 1
+        if (next <= Math.max(1, semNum - 1)) {
           setLastMainStep('UPLOAD_SEM')
           setSemCursor(next)
           setCurrentResult(null)
@@ -124,7 +125,12 @@ export default function App() {
       }
     }
     if (step === 'SEM_INPUT') {
-      if (semCount < 2) {
+      const semNum = parseInt(semCount.trim(), 10)
+      if (!semCount.trim() || isNaN(semNum)) {
+        setError('Please enter your current semester number.')
+        return
+      }
+      if (semNum < 2) {
         setError('Current semester must be at least 2 to upload previous semesters.')
         return
       }
@@ -238,67 +244,86 @@ export default function App() {
 
   return (
     <div>
-      <TopNav showBack={step !== 'COURSE' && step !== 'SUCCESS'} onBack={goBack} />
-      <div className="container">
-        <Hero />
-        {step !== 'SUCCESS' && <StepIndicator current={step} lastMainStep={lastMainStep} />}
+      {step !== 'SUCCESS' && (
+        <>
+          <TopNav showBack={step !== 'COURSE'} onBack={goBack} />
+          <div className="container">
+            <Hero />
+            <StepIndicator current={step} lastMainStep={lastMainStep} />
 
-        <div className="bento">
-          <section className={"card " + ((step === 'COURSE' || step === 'SEM_INPUT' || step === 'SUCCESS') ? 'bento-a' : 'bento-full')}>
-            {step === 'COURSE' && (
-              <>
-                <h3>Select Course</h3>
-                <div className="pill-toggle" style={{ marginTop: 12 }}>
+            <div className="bento">
+              <section className={"card " + ((step === 'COURSE' || step === 'SEM_INPUT') ? 'bento-a' : 'bento-full')}>
+                {step === 'COURSE' && (
+              <div style={{ display:'grid', gap:20 }}>
+                <h3 style={{ margin: 0 }}>Select Course</h3>
+                <div className="pill-toggle" style={{ marginTop: 4 }}>
                   <button className={"pill-btn " + (course==='UG'?'active':'')} onClick={()=>setCourse('UG')}>Undergraduate</button>
                   <button className={"pill-btn " + (course==='PG'?'active':'')} onClick={()=>setCourse('PG')}>Postgraduate</button>
                 </div>
-              </>
+              </div>
             )}
             {step === 'UPLOAD_10' && (
-              <>
-                <h3>Upload 10th Marksheet</h3>
+              <div style={{ display:'grid', gap:16 }}>
+                <h3 style={{ margin: 0 }}>Upload 10th Marksheet</h3>
                 <Dropzone onFile={(f)=>setFile(f)} currentFile={file} />
-                {error && <div style={{color:'#b00020', marginTop:10}}>Error: {error}</div>}
-              </>
+                {error && <div style={{color:'#b00020', padding:'12px', background:'#fee2e2', borderRadius:8, fontSize:14}}>Error: {error}</div>}
+              </div>
             )}
             {step === 'UPLOAD_12' && (
-              <>
-                <h3>Upload 12th Marksheet</h3>
+              <div style={{ display:'grid', gap:16 }}>
+                <h3 style={{ margin: 0 }}>Upload 12th Marksheet</h3>
                 <Dropzone onFile={(f)=>setFile(f)} currentFile={file} />
-                {error && <div style={{color:'#b00020', marginTop:10}}>Error: {error}</div>}
-              </>
+                {error && <div style={{color:'#b00020', padding:'12px', background:'#fee2e2', borderRadius:8, fontSize:14}}>Error: {error}</div>}
+              </div>
             )}
             {step === 'SEM_INPUT' && (
-              <>
-                <h3>Current Semester</h3>
+              <div style={{ display:'grid', gap:16 }}>
+                <h3 style={{ margin: 0 }}>Current Semester</h3>
                 <div style={{ display:'grid', gap:12 }}>
-                  <label style={{ color:'#64748B' }}>Enter your current semester (number)</label>
-                  <input className="edit-input" type="number" min={1} value={semCount} onChange={e=>setSemCount(Math.max(1, parseInt(e.target.value||'1',10)))} />
-                  <div style={{ color:'#64748B', fontSize: 14 }}>You will upload semester marksheets from 1 to {Math.max(1, semCount-1)}.</div>
+                  <label style={{ color:'#64748B', fontSize: 15, fontWeight: 500 }}>Enter your current semester (number)</label>
+                  <input 
+                    className="edit-input" 
+                    type="number" 
+                    min={1} 
+                    value={semCount} 
+                    onChange={e=>{
+                      const val = e.target.value
+                      setSemCount(val)
+                      setError(null)
+                    }}
+                    placeholder="e.g., 3, 4, 5..."
+                  />
+                  {semCount.trim() && !isNaN(parseInt(semCount.trim(), 10)) && (
+                    <div style={{ color:'#64748B', fontSize: 14, padding:'12px', background:'#FAFBFF', borderRadius:8 }}>
+                      You will upload semester marksheets from 1 to {Math.max(1, parseInt(semCount.trim(), 10) - 1)}.
+                    </div>
+                  )}
                 </div>
-                {error && <div style={{color:'#b00020', marginTop:10}}>Error: {error}</div>}
-              </>
+                {error && <div style={{color:'#b00020', padding:'12px', background:'#fee2e2', borderRadius:8, fontSize:14}}>Error: {error}</div>}
+              </div>
             )}
             {step === 'UPLOAD_SEM' && (
-              <>
-                <h3>Upload Semester {semCursor} Marksheet</h3>
+              <div style={{ display:'grid', gap:16 }}>
+                <h3 style={{ margin: 0 }}>Upload Semester {semCursor} Marksheet</h3>
                 <Dropzone onFile={(f)=>setFile(f)} currentFile={file} />
-                {error && <div style={{color:'#b00020', marginTop:10}}>Error: {error}</div>}
-              </>
+                {error && <div style={{color:'#b00020', padding:'12px', background:'#fee2e2', borderRadius:8, fontSize:14}}>Error: {error}</div>}
+              </div>
             )}
             {step === 'PROCESS' && (
-              <>
-                <h3>Processing</h3>
-                <div className="process-box" style={{ display:'grid', gap:12 }}>
+              <div style={{ display:'grid', gap:16 }}>
+                <h3 style={{ margin: 0 }}>Processing</h3>
+                <div className="process-box" style={{ display:'grid', gap:16, padding: '20px 0' }}>
                   <ProgressBar percent={progress} />
-                  <p style={{color:'#64748B', margin: 0}}>Extracting text from your document…</p>
+                  <p style={{color:'#64748B', margin: 0, fontSize: 15, textAlign: 'center'}}>Extracting text from your document…</p>
                 </div>
-              </>
+              </div>
             )}
             {step === 'PREVIEW' && (
-              <>
-                <h3>Preview</h3>
-                {!currentResult && <div>No data.</div>}
+              <div style={{ display:'grid', gap:16 }}>
+                <h3 style={{ margin: 0 }}>Preview</h3>
+                {!currentResult && (
+                  <div style={{ padding: '24px', textAlign: 'center', color: '#64748B' }}>No data available.</div>
+                )}
                 {currentResult && (
                   <>
                     {currentResultType === '10' && <Preview data={currentResult} />}
@@ -306,117 +331,212 @@ export default function App() {
                     {currentResultType === 'sem' && (
                       <CollegePreview data={currentResult} semester={semCursor} />
                     )}
-                    <div style={{ marginTop: 16 }}>
-                      <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                        <input type="checkbox" checked={verified} onChange={e=>setVerified(e.target.checked)} />
-                        <span>I verify that the above information is correct.</span>
+                    <div style={{ marginTop: 24, padding: '16px', background: '#FAFBFF', borderRadius: 12, border: '1px solid var(--border)' }}>
+                      <label style={{ display:'flex', alignItems:'center', gap:10, cursor: 'pointer' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={verified} 
+                          onChange={e=>setVerified(e.target.checked)}
+                          style={{ width: 18, height: 18, cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: 15, color: '#334155' }}>I verify that the above information is correct.</span>
                       </label>
                     </div>
-                    {error && <div style={{color:'#b00020', marginTop:10}}>Error: {error}</div>}
+                    {error && (
+                      <div style={{
+                        color:'#b00020', 
+                        padding:'12px', 
+                        background:'#fee2e2', 
+                        borderRadius:8, 
+                        fontSize:14
+                      }}>
+                        Error: {error}
+                      </div>
+                    )}
                   </>
                 )}
-              </>
-            )}
-            {step === 'REVIEW_ALL' && (
-              <>
-                <h3>Review All Marksheets</h3>
-                <div style={{ display:'grid', gap:16 }}>
-                  {data10 && (
-                    <div style={{ border:'1px solid var(--border)', borderRadius:10, padding:12 }}>
-                      <div style={{ fontWeight:600, marginBottom:8 }}>10th Marksheet</div>
-                      <Preview data={data10} compact />
-                    </div>
-                  )}
-                  {data12 && (
-                    <div style={{ border:'1px solid var(--border)', borderRadius:10, padding:12 }}>
-                      <div style={{ fontWeight:600, marginBottom:8 }}>12th Marksheet</div>
-                      <Preview data={data12} compact />
-                    </div>
-                  )}
-                  {Object.entries(semesterResults).map(([sem, data]) => (
-                    <div key={sem} style={{ border:'1px solid var(--border)', borderRadius:10, padding:12 }}>
-                      <div style={{ fontWeight:600, marginBottom:8 }}>Semester {sem} Marksheet</div>
-                      <CollegePreview data={data} semester={parseInt(sem)} compact />
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 16 }}>
-                  <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <input type="checkbox" checked={verified} onChange={e=>setVerified(e.target.checked)} />
-                    <span>I verify that all information is correct and ready to submit.</span>
-                  </label>
-                </div>
-                {error && <div style={{color:'#b00020', marginTop:10}}>Error: {error}</div>}
-              </>
-            )}
-            {step === 'SUCCESS' && (
-              <SuccessAnimation />
-            )}
-            {step !== 'SUCCESS' && (
-              <div className="center">
-                <button className="primary" onClick={onContinue} disabled={loading}>
-                  {step==='COURSE' && 'Continue'}
-                  {step==='UPLOAD_10' && (loading ? 'Processing…' : 'Process')}
-                  {step==='UPLOAD_12' && (loading ? 'Processing…' : 'Process')}
-                  {step==='SEM_INPUT' && 'Continue'}
-                  {step==='UPLOAD_SEM' && (loading ? 'Processing…' : 'Process')}
-                  {step==='PROCESS' && 'Processing…'}
-                  {step==='PREVIEW' && 'Continue'}
-                  {step==='REVIEW_ALL' && 'Submit'}
-                </button>
               </div>
             )}
-          </section>
-          {(step === 'COURSE' || step === 'SEM_INPUT') && (
-            <section className="card bento-b">
-              <h3>Guidance</h3>
-              <ul style={{ margin: 0, paddingLeft: 18, color: '#64748B' }}>
-                <li>Use high-quality scans for best results.</li>
-                <li>Supported: images or PDFs under 10MB.</li>
-                <li>Preview supports inline editing before you submit.</li>
-              </ul>
-            </section>
-          )}
-        </div>
-      </div>
+            {step === 'REVIEW_ALL' && (
+              <div style={{ display:'grid', gap:24 }}>
+                <h3 style={{ margin: 0 }}>Review All Marksheets</h3>
+                <div style={{ display:'grid', gap:12 }}>
+                  {data10 && (
+                    <CollapsibleMarksheet 
+                      title="10th Marksheet" 
+                      preview={<Preview data={data10} compact />}
+                      full={<Preview data={data10} />}
+                    />
+                  )}
+                  {data12 && (
+                    <CollapsibleMarksheet 
+                      title="12th Marksheet" 
+                      preview={<Preview data={data12} compact />}
+                      full={<Preview data={data12} />}
+                    />
+                  )}
+                  {Object.entries(semesterResults).map(([sem, data]) => (
+                    <CollapsibleMarksheet 
+                      key={sem}
+                      title={`Semester ${sem} Marksheet`}
+                      preview={<CollegePreview data={data} semester={parseInt(sem)} compact />}
+                      full={<CollegePreview data={data} semester={parseInt(sem)} />}
+                    />
+                  ))}
+                </div>
+                <div style={{ padding: '16px', background: '#FAFBFF', borderRadius: 12, border: '1px solid var(--border)' }}>
+                  <label style={{ display:'flex', alignItems:'center', gap:10, cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={verified} 
+                      onChange={e=>setVerified(e.target.checked)}
+                      style={{ width: 18, height: 18, cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: 15, color: '#334155' }}>I verify that all information is correct and ready to submit.</span>
+                  </label>
+                </div>
+                {error && (
+                  <div style={{
+                    padding: '12px', 
+                    background: '#fee2e2', 
+                    borderRadius: 8,
+                    fontSize: 14,
+                    color: '#b00020'
+                  }}>
+                    Error: {error}
+                  </div>
+                )}
+              </div>
+            )}
+                {step !== 'SUCCESS' && (
+                  <div className="center">
+                    <button className="primary" onClick={onContinue} disabled={loading}>
+                      {step==='COURSE' && 'Continue'}
+                      {step==='UPLOAD_10' && (loading ? 'Processing…' : 'Process')}
+                      {step==='UPLOAD_12' && (loading ? 'Processing…' : 'Process')}
+                      {step==='SEM_INPUT' && 'Continue'}
+                      {step==='UPLOAD_SEM' && (loading ? 'Processing…' : 'Process')}
+                      {step==='PROCESS' && 'Processing…'}
+                      {step==='PREVIEW' && 'Continue'}
+                      {step==='REVIEW_ALL' && 'Submit'}
+                    </button>
+                  </div>
+                )}
+              </section>
+              {(step === 'COURSE' || step === 'SEM_INPUT') && (
+                <section className="card bento-b">
+                  <h3>Guidance</h3>
+                  <ul style={{ margin: 0, paddingLeft: 18, color: '#64748B' }}>
+                    <li>Use high-quality scans for best results.</li>
+                    <li>Supported: images or PDFs under 10MB.</li>
+                    <li>Preview supports inline editing before you submit.</li>
+                  </ul>
+                </section>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+      {step === 'SUCCESS' && (
+        <SuccessAnimation />
+      )}
     </div>
   )
 }
 
 function SuccessAnimation() {
   return (
-    <div style={{ display:'grid', placeItems:'center', padding:'40px 20px', textAlign:'center' }}>
-      <div style={{
-        width: 120,
-        height: 120,
-        borderRadius: '50%',
-        background: '#22C55E',
-        display: 'grid',
-        placeItems: 'center',
-        marginBottom: 24,
-        animation: 'scaleIn 0.5s ease-out'
+    <div className="modal-backdrop" style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      background: 'rgba(0,0,0,0.5)',
+      backdropFilter: 'blur(4px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '20px',
+      animation: 'fadeInBackdrop 0.3s ease-out'
+    }}>
+      <div className="modal" style={{ 
+        width: '100%',
+        maxWidth: 420,
+        background: '#fff',
+        borderRadius: 20,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        padding: '48px 32px',
+        textAlign: 'center',
+        animation: 'slideUp 0.4s ease-out',
+        position: 'relative'
       }}>
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      </div>
-      <h2 style={{ margin: 0, marginBottom: 8 }}>Submission Successful!</h2>
-      <p style={{ color: '#64748B', margin: 0, marginBottom: 32 }}>All marksheets have been processed and saved.</p>
-      <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 24 }}>
-        Powered by 404 Founders
-      </div>
-      <style>{`
-        @keyframes scaleIn {
-          from {
-            transform: scale(0);
-            opacity: 0;
+        <div style={{
+          width: 120,
+          height: 120,
+          borderRadius: '50%',
+          background: '#22C55E',
+          display: 'grid',
+          placeItems: 'center',
+          margin: '0 auto 32px',
+          animation: 'scaleIn 0.6s ease-out',
+          boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)'
+        }}>
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'checkmark 0.5s ease-out 0.3s both' }}>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <h2 style={{ margin: 0, marginBottom: 12, fontSize: 28, fontWeight: 700, color: '#1e293b' }}>Submission Successful!</h2>
+        <p style={{ color: '#64748B', margin: 0, marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>All marksheets have been processed and saved successfully.</p>
+        <div style={{ 
+          fontSize: 13, 
+          color: '#94A3B8', 
+          marginTop: 32,
+          paddingTop: 24,
+          borderTop: '1px solid var(--border)',
+          fontWeight: 500,
+          letterSpacing: 0.3
+        }}>
+          Powered by 404 Founders
+        </div>
+        <style>{`
+          @keyframes fadeInBackdrop {
+            from { opacity: 0; }
+            to { opacity: 1; }
           }
-          to {
-            transform: scale(1);
-            opacity: 1;
+          @keyframes slideUp {
+            from {
+              transform: translateY(30px);
+              opacity: 0;
+            }
+            to {
+              transform: translateY(0);
+              opacity: 1;
+            }
           }
-        }
-      `}</style>
+          @keyframes scaleIn {
+            from {
+              transform: scale(0);
+              opacity: 0;
+            }
+            50% {
+              transform: scale(1.1);
+            }
+            to {
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+          @keyframes checkmark {
+            from {
+              stroke-dasharray: 0 24;
+              opacity: 0;
+            }
+            to {
+              stroke-dasharray: 24 24;
+              opacity: 1;
+            }
+          }
+        `}</style>
+      </div>
     </div>
   )
 }
@@ -479,12 +599,30 @@ function ProgressBar({ percent }:{ percent:number }){
 
 function TopNav({ showBack, onBack }:{ showBack?: boolean; onBack?: ()=>void }){
   return (
-    <div className="nav" style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-      {showBack ? (
-        <button className="icon-btn" onClick={onBack} style={{ order: -1 }}>Back</button>
-      ) : <div />}
-      <div className="logo">Marksheet</div>
-      <div />
+    <div className="nav" style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap: 12 }}>
+      <div style={{ flex: showBack ? 0 : 1, display: 'flex', alignItems: 'center' }}>
+        {showBack && (
+          <button 
+            className="icon-btn" 
+            onClick={onBack}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 6,
+              fontSize: 14,
+              fontWeight: 500,
+              padding: '8px 12px'
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back
+          </button>
+        )}
+      </div>
+      <div className="logo" style={{ flex: 1, textAlign: 'center' }}>Marksheet</div>
+      <div style={{ flex: showBack ? 0 : 1, minWidth: showBack ? 'auto' : 0 }} />
     </div>
   )
 }
@@ -708,6 +846,99 @@ function CollegePreview({ data, semester, compact }: { data:any; semester:number
   )
 }
 
+function CollapsibleMarksheet({ title, preview, full }: { title: string; preview: React.ReactNode; full: React.ReactNode }) {
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <div style={{ 
+      border: '1px solid var(--border)', 
+      borderRadius: 12, 
+      overflow: 'hidden',
+      background: '#fff',
+      transition: 'all 0.2s ease',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+    }}>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        style={{
+          width: '100%',
+          padding: '16px',
+          background: 'transparent',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          gap: 12,
+          textAlign: 'left',
+          transition: 'background 0.15s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#FAFBFF'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8, color: '#1e293b' }}>{title}</div>
+          {!expanded && (
+            <div style={{ 
+              color: '#64748B', 
+              fontSize: 14,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxHeight: '60px'
+            }}>
+              {preview}
+            </div>
+          )}
+        </div>
+        <div style={{
+          width: 32,
+          height: 32,
+          minWidth: 32,
+          display: 'grid',
+          placeItems: 'center',
+          borderRadius: 6,
+          background: '#F1F5F9',
+          flexShrink: 0,
+          transition: 'all 0.2s ease'
+        }}>
+          <svg 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="#64748B" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            style={{ 
+              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s ease'
+            }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </button>
+      {expanded && (
+        <div style={{ 
+          padding: '0 16px 16px 16px', 
+          borderTop: '1px solid var(--border)',
+          marginTop: 0,
+          paddingTop: 16,
+          animation: 'fadeIn 0.2s ease'
+        }}>
+          {full}
+        </div>
+      )}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 function Login({ onSuccess }:{ onSuccess: ()=>void }){
   const [u, setU] = useState('')
   const [p, setP] = useState('')
@@ -718,14 +949,98 @@ function Login({ onSuccess }:{ onSuccess: ()=>void }){
     else setErr('Invalid credentials')
   }
   return (
-    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
-      <div className="card" style={{ width: 360 }}>
-        <h3 style={{ marginTop: 0 }}>Login</h3>
-        <form onSubmit={submit} style={{ display:'grid', gap:10 }}>
-          <input className="edit-input" placeholder="Username" value={u} onChange={e=>setU(e.target.value)} />
-          <input className="edit-input" placeholder="Password" type="password" value={p} onChange={e=>setP(e.target.value)} />
-          {err && <div style={{ color:'#b00020' }}>{err}</div>}
-          <button className="primary" type="submit">Sign in</button>
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '20px',
+      boxSizing: 'border-box'
+    }}>
+      <div className="card" style={{ 
+        width: '100%',
+        maxWidth: 420,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        margin: '0 auto',
+        padding: '32px 24px',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            display: 'grid',
+            placeItems: 'center',
+            margin: '0 auto 16px'
+          }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <h2 style={{ margin: 0, marginBottom: 8, fontSize: 28, fontWeight: 700 }}>Welcome Back</h2>
+          <p style={{ margin: 0, color: '#64748B', fontSize: 15 }}>Sign in to continue to Marksheet Extraction</p>
+        </div>
+        <form onSubmit={submit} style={{ display:'grid', gap:16 }}>
+          <div>
+            <label style={{ display:'block', marginBottom: 8, fontSize: 14, fontWeight: 500, color: '#334155' }}>Username</label>
+            <input 
+              className="edit-input" 
+              placeholder="Enter your username" 
+              value={u} 
+              onChange={e=>{setU(e.target.value); setErr(null)}}
+              style={{ 
+                width: '100%', 
+                padding: '12px 16px', 
+                fontSize: 15,
+                boxSizing: 'border-box',
+                border: '1px solid var(--border)',
+                borderRadius: '8px'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display:'block', marginBottom: 8, fontSize: 14, fontWeight: 500, color: '#334155' }}>Password</label>
+            <input 
+              className="edit-input" 
+              placeholder="Enter your password" 
+              type="password" 
+              value={p} 
+              onChange={e=>{setP(e.target.value); setErr(null)}}
+              style={{ 
+                width: '100%', 
+                padding: '12px 16px', 
+                fontSize: 15,
+                boxSizing: 'border-box',
+                border: '1px solid var(--border)',
+                borderRadius: '8px'
+              }}
+            />
+          </div>
+          {err && (
+            <div style={{ 
+              color:'#b00020', 
+              background: '#fee2e2', 
+              padding: '10px 12px', 
+              borderRadius: 8,
+              fontSize: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              {err}
+            </div>
+          )}
+          <button className="primary" type="submit" style={{ marginTop: 8, padding: '14px', fontSize: 16, fontWeight: 600 }}>Sign In</button>
         </form>
       </div>
     </div>

@@ -37,10 +37,20 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-2) Start FastAPI
+2) Start FastAPI (for network access - accessible from phones/other devices)
 ```bash
+# Option 1: Use the provided run script (recommended)
+cd backend
+python run.py
+
+# Option 2: Use uvicorn directly
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Option 3: Windows - double-click start_backend.bat
+# Option 4: Linux/Mac - ./start_backend.sh
 ```
+
+**Important**: Use `--host 0.0.0.0` to allow access from other devices on your network (like phones). Without it, only `localhost` can access the API.
 
 API
 - POST `http://localhost:8000/process`
