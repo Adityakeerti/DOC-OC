@@ -45,27 +45,49 @@ def extract_cbse_data(info_text: str, marks_text: str) -> Dict[str, Any]:
         "subjects": []
     }
 
-    # Info extraction unchanged
-    name_match = re.search(r'Name of Candidate\s+([A-Z ]+)', info_text)
+    # Enhanced info extraction with multiple patterns
+    # Name extraction with multiple patterns
+    name_match = re.search(r'Name of Candidate\s+([A-Z][A-Z ]+)', info_text)
+    if not name_match:
+        name_match = re.search(r'This is to certify that\s+([A-Z][A-Z ]+)', info_text)
+    if not name_match:
+        # Look for name before "has achieved" or similar phrases
+        name_match = re.search(r'([A-Z][A-Z ]+)\s+(?:has achieved|की शैक्षणिक)', info_text)
     result["student_name"] = clean_text(name_match.group(1)) if name_match else None
+    
+    # Roll number with flexible patterns
     roll_match = re.search(r'Roll No\.?\s*(\d+)', info_text)
+    if not roll_match:
+        roll_match = re.search(r'अनुक्रमांक\s*(\d+)', info_text)
     result["roll_number"] = roll_match.group(1) if roll_match else None
-    mother_match = re.search(r"Mother'?s Name\s+([A-Z ]+)", info_text)
+    
+    # Mother's name with multiple patterns
+    mother_match = re.search(r"Mother'?s Name\s+([A-Z][A-Z ]+)", info_text)
+    if not mother_match:
+        mother_match = re.search(r"माता का नाम\s+([A-Z][A-Z ]+)", info_text)
     result["mother_name"] = clean_text(mother_match.group(1)) if mother_match else None
-    father_match = re.search(r"Father'?s/Guardian'?s Name\s+([A-Z ]+)", info_text)
+    
+    # Father's name with multiple patterns
+    father_match = re.search(r"Father'?s/Guardian'?s Name\s+([A-Z][A-Z ]+)", info_text)
     if not father_match:
-        father_match = re.search(r"Father'?s Name\s+([A-Z ]+)", info_text)
+        father_match = re.search(r"Father'?s Name\s+([A-Z][A-Z ]+)", info_text)
+    if not father_match:
+        father_match = re.search(r"पिता /संरक्षक का नाम\s+([A-Z][A-Z ]+)", info_text)
     result["father_name"] = clean_text(father_match.group(1)) if father_match else None
-    school_match = re.search(r'School\s*(\d{5})\s+([A-Z &]+[A-Z ]+)', info_text)
+    
+    # School information with enhanced patterns
+    school_match = re.search(r'School\s*(\d{5})\s*-?\s*([A-Z][A-Z &\-,\.]+)', info_text)
     if not school_match:
-        school_match = re.search(r'(\d{5})\s+([A-Z &]+[A-Z ]+)', info_text)
+        school_match = re.search(r'विद्यालय\s*(\d{5})\s*-?\s*([A-Z][A-Z &\-,\.]+)', info_text)
+    if not school_match:
+        school_match = re.search(r'(\d{5})\s*-?\s*([A-Z][A-Z &\-,\.]+)', info_text)
     if school_match:
         result["school_code"] = school_match.group(1)
         result["school_name"] = clean_text(school_match.group(2))
 
-    # Flexible and greedy pattern for marks part
+    # Enhanced marks pattern with better subject name capture
     marks_pattern = re.compile(
-        r'^\s*(\d{3})\s+([A-Z &]+?)\s+([0-9]{2,3}|xxx)?\s+([0-9]{2,3}|xxx)?\s+([0-9]{2,3})?\s+([A-Z ]+)?\s*([A-Z]\d)?\s*$'
+        r'^\s*(\d{3})\s+([A-Z][A-Z &\-\.]+?)\s+([0-9]{2,3}|xxx)?\s+([0-9]{2,3}|xxx)?\s+([0-9]{2,3})?\s+([A-Z ]+(?:[A-Z]+)?)?\s*([A-Z]\d)?\s*$'
     )
 
     for line in marks_text.splitlines():
@@ -97,6 +119,86 @@ def extract_cbse_data(info_text: str, marks_text: str) -> Dict[str, Any]:
             # Only add subjects with a code and name (avoid noise)
             if code and name:
                 result["subjects"].append(subject)
+
+    return result
+
+def extract_uttarakhand_data(info_text: str, marks_text: str) -> Dict[str, Any]:
+    """Extract data from Uttarakhand board marksheet"""
+    result = {
+        "board": "UTTARAKHAND",
+        "student_name": None,
+        "mother_name": None,
+        "father_name": None,
+        "school_name": None,
+        "subjects": []
+    }
+
+    # Name extraction with multiple patterns
+    name_match = re.search(r'according to the Board\'s record\s+([A-Z][A-Z ]+)', info_text)
+    if not name_match:
+        name_match = re.search(r'परिषद् के अभिलेखानुसार\s+([^\n]+)\n[^\n]*\s+([A-Z][A-Z ]+)', info_text)
+        if name_match:
+            result["student_name"] = clean_text(name_match.group(2))
+        else:
+            result["student_name"] = None
+    else:
+        result["student_name"] = clean_text(name_match.group(1))
+
+    # Mother's name
+    mother_match = re.search(r'Son/Daughter of Mrs\.\s+([A-Z][A-Z ]+)', info_text)
+    if not mother_match:
+        mother_match = re.search(r'आत्मज/आत्मजा श्रीमती\s+[^\n]*\s+([A-Z][A-Z ]+)', info_text)
+    result["mother_name"] = clean_text(mother_match.group(1)) if mother_match else None
+
+    # Father's name
+    father_match = re.search(r'and Mr\.\s+([A-Z][A-Z ]+)', info_text)
+    if not father_match:
+        father_match = re.search(r'एवं श्री\s+[^\n]*\s+([A-Z][A-Z ]+)', info_text)
+    result["father_name"] = clean_text(father_match.group(1)) if father_match else None
+
+    # School name
+    school_match = re.search(r'from School\s+([A-Z][A-Z\.\s]+)', info_text)
+    result["school_name"] = clean_text(school_match.group(1)) if school_match else None
+
+    # Marks extraction for Uttarakhand format
+    for line in marks_text.splitlines():
+        line = line.strip()
+        if not line or re.search(r'(SUBJECT|GRADE|PASSED|RESULT|POSITIONAL|ADDITIONAL SUBJECT|DATED)', line):
+            continue
+            
+        # Pattern for subject lines: code + name + marks
+        subject_match = re.match(r'^(\d{3})\s+([A-Z][A-Z ]+?)\s+(.*)', line)
+        if subject_match:
+            code = subject_match.group(1)
+            name = clean_text(subject_match.group(2))
+            marks_part = subject_match.group(3)
+            
+            # Extract all numbers from marks part
+            marks_list = [int(x) for x in re.findall(r'\d{2,3}', marks_part)]
+            
+            theory = practical = internal = total = None
+            
+            # Parse based on subject type and number of marks
+            if name == 'SOCIAL SCIENCE' and len(marks_list) >= 3:
+                theory, internal, total = marks_list[0], marks_list[1], marks_list[2]
+            elif name in ['MATHEMATICS', 'SCIENCE'] and len(marks_list) >= 3:
+                theory, practical, total = marks_list[0], marks_list[1], marks_list[2]
+            elif len(marks_list) >= 2:
+                theory, total = marks_list[0], marks_list[-1]
+            elif len(marks_list) == 1:
+                theory = total = marks_list[0]
+            
+            if code and name:
+                result["subjects"].append({
+                    "code": code,
+                    "name": name,
+                    "theory_marks": theory,
+                    "practical_marks": practical,
+                    "internal_marks": internal,
+                    "total_marks": total,
+                    "marks_in_words": digits_to_words(total) if total is not None else None,
+                    "grade": None
+                })
 
     return result
 
@@ -273,81 +375,7 @@ def extract_icse_data(info_text: str, marks_text: str):
 
     result['subjects'] = deduped
     return result
-def extract_uttarakhand_data(info_text: str, marks_text: str) -> Dict[str, Any]:
-    result = {
-        "board": "UTTARAKHAND",
-        "student_name": None,
-        "mother_name": None,
-        "father_name": None,
-        "school_name": None,
-        "subjects": []
-    }
-    # Extract name and school fields (unchanged)
-    name_search = re.search(r'([A-Z ]+)\s+SonDaughter of', info_text)
-    if name_search:
-        result["student_name"] = clean_text(name_search.group(1))
-    mother_match = re.search(r'Mrs\. ([A-Z ]+)', info_text)
-    if mother_match:
-        # Remove stray characters at end, like ' O'
-        result["mother_name"] = clean_text(re.sub(r'[^A-Z ]+', '', mother_match.group(1)).strip())
-    father_match = re.search(r'Mr\. ([A-Z ]+)', info_text)
-    if father_match:
-        result["father_name"] = clean_text(re.sub(r'[^A-Z ]+', '', father_match.group(1)).strip())
-    school_match = re.search(r'from School\s+([A-Z0-9 .&-]+)', info_text)
-    if school_match:
-        result["school_name"] = clean_text(school_match.group(1))
 
-    # Subject lines parsing
-    lines = marks_text.split('\n')
-    # Capture multi-word subject names (non-greedy, require at least one space before numbers)
-    subject_pat = re.compile(r'^(\d{3})\s+([A-Z .&\'-]+?)\s+((?:\d{2,3}\s+){1,3}\d{2,3})')
-    for l in lines:
-        line = l.strip()
-        if not line:
-            continue
-        if re.search(r'(SUBJECT|GRADE|PASSED|RESULT|POSITIONAL|ADDITIONAL SUBJECT|DATED)', line):
-            continue
-        m = subject_pat.match(line)
-        if not m:
-            continue
-        code = m.group(1)
-        subject_name = clean_text(m.group(2))
-        marks_list = [int(x) for x in re.findall(r'\d{2,3}', m.group(3))]
-        theory = practical = internal = total = None
-
-        # --- Correction Starts Here ---
-        if subject_name == 'SOCIAL SCIENCE' and len(marks_list) == 3:
-            theory = marks_list[0]
-            internal = marks_list[1]
-            total = marks_list[2]
-        elif subject_name in ['MATHEMATICS', 'SCIENCE'] and len(marks_list) == 3:
-            theory = marks_list[0]
-            practical = marks_list[1]
-            total = marks_list[2]
-        elif subject_name in ['MATHEMATICS', 'SCIENCE', 'SOCIAL SCIENCE']:
-            if len(marks_list) == 2:
-                theory, total = marks_list
-            elif marks_list:
-                theory = marks_list[0]
-        else:
-            # For HINDI, ENGLISH, SANSKRIT, etc.
-            if len(marks_list) >= 2:
-                theory, total = marks_list[:2]
-            elif marks_list:
-                theory = marks_list[0]
-        # --- Correction Ends Here ---
-
-        result['subjects'].append({
-            "code": code,
-            "name": subject_name,
-            "theory_marks": theory,
-            "practical_marks": practical,
-            "internal_marks": internal,
-            "total_marks": total,
-            "marks_in_words": digits_to_words(total) if total is not None else None,
-            "grade": None
-        })
-    return result
 
 
 def normalize_board_name(board_name: str) -> str:

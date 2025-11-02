@@ -129,7 +129,7 @@ def process_image_with_tables(image_path, json_path):
     # Process Information Table
     if info_table:
         print(f"  Processing Information Table (confidence: {info_table['confidence']:.3f})")
-        cropped_img = crop_table_from_image(image_path, info_table["coordinates"], margin_ratio=0.10)
+        cropped_img = crop_table_from_image(image_path, info_table["coordinates"], margin_ratio=0.15)
         temp_file = save_cropped_image(cropped_img, filename, "info")
         
         try:
