@@ -1,0 +1,25 @@
+{
+  "file": "F:\\CODING\\DOC OC V5\\DOC OC FINAL\\backend\\uploads\\5f71a0d257f0477b97a7f6c40b008b31.jpg",
+  "table_coordinates": [
+    {
+      "table_id": 1,
+      "table_type": "Information Table",
+      "normalized": [
+        0.395423,
+        0.163709,
+        0.653978,
+        0.12866
+      ]
+    },
+    {
+      "table_id": 2,
+      "table_type": "Marks Table",
+      "normalized": [
+        0.492943,
+        0.472937,
+        0.849016,
+        0.492458
+      ]
+    }
+  ]
+}

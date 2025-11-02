@@ -1,0 +1,83 @@
+{
+  "board": "CBSE",
+  "student_name": "JYOTI",
+  "roll_number": "9209535",
+  "mother_name": null,
+  "father_name": null,
+  "school_name": "MOTHER KHAZANI CONVENT SCHOOL MUNGESH PUR DLI",
+  "school_code": "65345",
+  "subjects": [
+    {
+      "code": "301",
+      "name": "ENGLISH CORE",
+      "theory_marks": 87,
+      "practical_marks": null,
+      "total_marks": 87,
+      "total_in_words": "EIGHT SEVEN",
+      "grade": "A2"
+    },
+    {
+      "code": "041",
+      "name": "MATHEMATICS",
+      "theory_marks": 50,
+      "practical_marks": null,
+      "total_marks": 50,
+      "total_in_words": "FIVE ZERO",
+      "grade": "C2"
+    },
+    {
+      "code": "042",
+      "name": "PHYSICS",
+      "theory_marks": 34,
+      "practical_marks": 30,
+      "total_marks": 64,
+      "total_in_words": "SIX FOUR",
+      "grade": "C1"
+    },
+    {
+      "code": "043",
+      "name": "CHEMISTRY",
+      "theory_marks": 25,
+      "practical_marks": 30,
+      "total_marks": 55,
+      "total_in_words": "FIVE FIVE",
+      "grade": "D1"
+    },
+    {
+      "code": "048",
+      "name": "PHYSICAL EDUCATION",
+      "theory_marks": 62,
+      "practical_marks": 29,
+      "total_marks": 91,
+      "total_in_words": "NINE ONE",
+      "grade": "A1"
+    },
+    {
+      "code": "500",
+      "name": "WORK EXPERIENCE",
+      "theory_marks": null,
+      "practical_marks": null,
+      "total_marks": 81,
+      "total_in_words": "EIGHT ONE",
+      "grade": null
+    },
+    {
+      "code": "502",
+      "name": "PHY & HEALTH EDUCA",
+      "theory_marks": null,
+      "practical_marks": null,
+      "total_marks": null,
+      "total_in_words": null,
+      "grade": "A2"
+    },
+    {
+      "code": "503",
+      "name": "GENERAL STUDIES",
+      "theory_marks": null,
+      "practical_marks": null,
+      "total_marks": null,
+      "total_in_words": null,
+      "grade": "B1"
+    }
+  ]
+}

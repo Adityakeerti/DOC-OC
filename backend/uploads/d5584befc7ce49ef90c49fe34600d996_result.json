@@ -1,0 +1,76 @@
+{
+  "input_image": "F:\\CODING\\DOC OC V5\\DOC OC FINAL\\backend\\uploads\\d5584befc7ce49ef90c49fe34600d996.png",
+  "preprocessing": {
+    "status": "success",
+    "crop_coordinates": [
+      0,
+      0,
+      659,
+      880
+    ],
+    "processed_image_shape": [
+      880,
+      659,
+      3
+    ],
+    "preprocessed_image": "F:\\CODING\\DOC OC V5\\DOC OC FINAL\\backend\\uploads\\d5584befc7ce49ef90c49fe34600d996_preprocessed.jpg"
+  },
+  "logo_detection": {
+    "status": "success",
+    "board_id": 1,
+    "board_name": "CBSE",
+    "detected": true
+  },
+  "face_detection": {
+    "status": "success",
+    "photo_detected": 1,
+    "board": "CBSE"
+  },
+  "table_detection": {
+    "status": "success",
+    "tables_found": 1,
+    "has_tables": true,
+    "table_coordinates": [
+      {
+        "table_id": 1,
+        "table_type": "Marks Table",
+        "confidence": 0.9948360919952393,
+        "coordinates": {
+          "x1": 36.6415901184082,
+          "y1": 447.19171142578125,
+          "x2": 632.3795776367188,
+          "y2": 684.2506713867188
+        },
+        "width": 595.7379875183105,
+        "height": 237.0589599609375
+      },
+      {
+        "table_id": 2,
+        "table_type": "Information Table",
+        "confidence": 0.5571495294570923,
+        "coordinates": {
+          "x1": 22.59052085876465,
+          "y1": 248.46388244628906,
+          "x2": 486.00323486328125,
+          "y2": 421.0328369140625
+        },
+        "width": 463.4127140045166,
+        "height": 172.56895446777344
+      },
+      {
+        "table_id": 3,
+        "table_type": "Information Table",
+        "confidence": 0.7394453883171082,
+        "coordinates": {
+          "x1": 23.63910675048828,
+          "y1": 268.35626220703125,
+          "x2": 488.0919189453125,
+          "y2": 422.5061340332031
+        },
+        "width": 464.4528121948242,
+        "height": 154.14987182617188
+      }
+    ]
+  },
+  "overall_status": "valid_marksheet"
+}

@@ -1,0 +1,122 @@
+{
+  "college": {
+    "course": "BACHELOR OF TECHNOLOGY - I SEMESTER EXAMINATION (2023-24)",
+    "semester": "I",
+    "session": "2023-24"
+  },
+  "student": {
+    "name": "ADITYAKEERTI",
+    "father_name": "SHYAMA CHARAN",
+    "enrollment_no": "PV-23180236",
+    "roll_no": "2318236"
+  },
+  "subjects": [
+    {
+      "code": "TPH101",
+      "name": "Engineering Physics",
+      "credits": 3,
+      "internal_marks": 39,
+      "external_marks": 15,
+      "total": 54,
+      "grade": "B",
+      "grade_point": 6.0
+    },
+    {
+      "code": "TEE101",
+      "name": "Basic Electrical Engineering",
+      "credits": 2,
+      "internal_marks": 24,
+      "external_marks": 29,
+      "total": 53,
+      "grade": "B",
+      "grade_point": 6.0
+    },
+    {
+      "code": "TMA101",
+      "name": "Engineering Mathematics-I",
+      "credits": 4,
+      "internal_marks": 22,
+      "external_marks": 18,
+      "total": 40,
+      "grade": "P",
+      "grade_point": 4.0
+    },
+    {
+      "code": "TCE101",
+      "name": "Basics of Civil Engineering",
+      "credits": 2,
+      "internal_marks": 36,
+      "external_marks": 38,
+      "total": 74,
+      "grade": "A",
+      "grade_point": 8.0
+    },
+    {
+      "code": "TCS101",
+      "name": "Fundamental of Computer & Introduction to",
+      "credits": 3,
+      "internal_marks": 35,
+      "external_marks": 30,
+      "total": 65,
+      "grade": "B+",
+      "grade_point": 7.0
+    },
+    {
+      "code": "THF101",
+      "name": "Healthy Living & Fitness",
+      "credits": 0,
+      "internal_marks": 0,
+      "external_marks": 80,
+      "total": 80,
+      "grade": "A+",
+      "grade_point": 9.0
+    },
+    {
+      "code": "PPH151",
+      "name": "Physics Lab",
+      "credits": 1,
+      "internal_marks": 42,
+      "external_marks": 40,
+      "total": 82,
+      "grade": "A+",
+      "grade_point": 9.0
+    },
+    {
+      "code": "PME151",
+      "name": "Workshop and Manufacturing Practices",
+      "credits": 1,
+      "internal_marks": 40,
+      "external_marks": 37,
+      "total": 77,
+      "grade": "A+",
+      "grade_point": 9.0
+    },
+    {
+      "code": "PCS151",
+      "name": "Computer Lab-I",
+      "credits": 2,
+      "internal_marks": 44,
+      "external_marks": 20,
+      "total": 64,
+      "grade": "B+",
+      "grade_point": 7.0
+    },
+    {
+      "code": "GP101",
+      "name": "General Proficiency",
+      "credits": 1,
+      "internal_marks": 0,
+      "external_marks": 83,
+      "total": 83,
+      "grade": "A+",
+      "grade_point": 9.0
+    }
+  ],
+  "result": {
+    "total_credits_registered": 22,
+    "total_credits_earned": 22,
+    "sgpa": 6.82,
+    "cgpa": null,
+    "status": "PASS"
+  }
+}

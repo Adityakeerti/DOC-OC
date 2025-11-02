@@ -1,0 +1,31 @@
+{
+  "file": "F:\\CODING\\DOC OC V5\\DOC OC FINAL\\backend\\uploads\\9da06ac95f184e6b914ffa2cc06de84c.jpg",
+  "table_coordinates": [
+    {
+      "table_id": 1,
+      "table_type": "Marks Table",
+      "confidence": 0.9929895401000977,
+      "coordinates": {
+        "x1": 103.22799682617188,
+        "y1": 1044.6859130859375,
+        "x2": 1061.389404296875,
+        "y2": 1396.9578857421875
+      },
+      "width": 958.1614074707031,
+      "height": 352.27197265625
+    },
+    {
+      "table_id": 2,
+      "table_type": "Information Table",
+      "confidence": 0.6746571660041809,
+      "coordinates": {
+        "x1": 122.9917984008789,
+        "y1": 747.765869140625,
+        "x2": 948.1822509765625,
+        "y2": 997.3204956054688
+      },
+      "width": 825.1904525756836,
+      "height": 249.55462646484375
+    }
+  ]
+}
