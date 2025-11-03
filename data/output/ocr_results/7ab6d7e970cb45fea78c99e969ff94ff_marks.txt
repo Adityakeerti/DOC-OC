@@ -1,0 +1,16 @@
+
+
+                                               MARKS DOTXISTO 
+   कोड                                                                      ire 
+ SUB         विषय                                        बा   ष्टों में 
+CODE                            THEORY PUTKCAL TOTAL   TOTAL WORDS     CEADL 
+
+  301    ENGLISH CORE             087    xxx   087    EIGHTY SEVEN       A2 
+  041    MATHEMATICS              050    xxx   050    FIFTY              C2 
+  042    PHYSICS                  034    030   064    SIXTY FOUR         C1 
+  043    CHEMISTRY                025    030   055    FIFTY FIVE         D1 
+  048    PHYSICAL EDUCATION        062   029   091    NINETY ONE         A1 
+  500    WORK EXPERIENCE                                                 81 
+  502    PHY & HEALTH EDUCA                                              A2 
+  503    GENERAL STUDIES                                                 B1 
+<<<

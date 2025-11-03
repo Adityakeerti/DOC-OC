@@ -1,0 +1,112 @@
+{
+  "college": {
+    "course": "BACHELOR OF TECHNOLOGY - II SEMESTER EXAMINATION (2023-24)",
+    "semester": "II",
+    "session": "2023-24"
+  },
+  "student": {
+    "name": "ADITYAKEERTI",
+    "father_name": "SHYAMA CHARAN",
+    "enrollment_no": "PV-23180236",
+    "roll_no": "2318236"
+  },
+  "subjects": [
+    {
+      "code": "TCH201",
+      "name": "Engineering Chemistry",
+      "credits": 3,
+      "internal_marks": 40,
+      "external_marks": 24,
+      "total": 64,
+      "grade": "B+",
+      "grade_point": 7.0
+    },
+    {
+      "code": "TMA201",
+      "name": "Engineering Mathematics-II",
+      "credits": 4,
+      "internal_marks": 30,
+      "external_marks": 31,
+      "total": 61,
+      "grade": "B+",
+      "grade_point": 7.0
+    },
+    {
+      "code": "TEC201",
+      "name": "Basic Electronics Engineering",
+      "credits": 3,
+      "internal_marks": 32,
+      "external_marks": 23,
+      "total": 55,
+      "grade": "B",
+      "grade_point": 6.0
+    },
+    {
+      "code": "TCS201",
+      "name": "Programming for Problem Solving",
+      "credits": 3,
+      "internal_marks": 42,
+      "external_marks": 27,
+      "total": 69,
+      "grade": "A",
+      "grade_point": 8.0
+    },
+    {
+      "code": "TEV201",
+      "name": "Environmental Science",
+      "credits": 0,
+      "internal_marks": 30,
+      "external_marks": 25,
+      "total": 55,
+      "grade": "B",
+      "grade_point": 6.0
+    },
+    {
+      "code": "PCH251",
+      "name": "Chemistry Lab",
+      "credits": 1,
+      "internal_marks": 41,
+      "external_marks": 46,
+      "total": 87,
+      "grade": "O",
+      "grade_point": 10.0
+    },
+    {
+      "code": "PME253",
+      "name": "Engineering Graphics and Design Lab",
+      "credits": 2,
+      "internal_marks": 48,
+      "external_marks": 50,
+      "total": 98,
+      "grade": "O",
+      "grade_point": 10.0
+    },
+    {
+      "code": "PCS251",
+      "name": "Computer Lab-II",
+      "credits": 2,
+      "internal_marks": 45,
+      "external_marks": 48,
+      "total": 93,
+      "grade": "O",
+      "grade_point": 10.0
+    },
+    {
+      "code": "GP201",
+      "name": "General Proficiency",
+      "credits": 1,
+      "internal_marks": 0,
+      "external_marks": 80,
+      "total": 80,
+      "grade": "A+",
+      "grade_point": 9.0
+    }
+  ],
+  "result": {
+    "total_credits_registered": 22,
+    "total_credits_earned": 22,
+    "sgpa": 7.95,
+    "cgpa": null,
+    "status": "PASS"
+  }
+}

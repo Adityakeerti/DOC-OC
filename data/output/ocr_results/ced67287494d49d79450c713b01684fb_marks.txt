@@ -1,0 +1,42 @@
+
+   Father's Name :    SHYAMA CHARAN                                         Roll No:   2318236 
+
+                                                                         MID SEM     SESSIONAL     END SEM    PRACTICAL     Total 
+                              SUBJECT                        CREDITS   EXAM/Term    MARKS/Term    EXAM/Term Marks/Term     MARKS     GRADE GRADE 
+                                                                         Asst.III      Asst.I       Asst.IV     Asst.II   OBTAINED           POINT 
+
+           CODE                     NAME                               Max.   Obt   Max.    Obt   Max.   Obt Max.   Obt 
+
+                                                                                                                     -        68       A       8 
+ Theory THU101    Professional Communication                    2       25     18    25     19     50     31 
+
+         TPH101   Engineering Physics                           3       25     19    25     20     50     15                  54       B        6 
+
+         TEE101   Basic Electrical Engineering                  2       25     08    25     16     50     29                  53        B       6 
+
+         TMA101   Engineering Mathematics-I                     4       25     07    25     15     50     18                  40        P      4 
+
+         TCE101   Basics of Civil Engineering                   2       25     17    25     19     50     38                  74       A        8 
+
+         TCS101   Fundamental of Computer & Introduction to     3       25     14    25     21     50     30                  65       B+       7 
+                  Programming 
+         THF101   Healthy Living & Fitness                      0        -      -     -      -     100    80                  80       A+       9 
+
+ Practical PEE151 Basic Electrical Engineering Lab              1       25     22    25     18     50     46                  86       O       10 
+
+         PPH151   Physics Lab                                   1       25     20    25     22     50     40                  82       A+       9 
+
+         PME151   Workshop and Manufacturing Practices          1       25     20    25     20     50     37                  77       A+       9 
+
+         PCS151   Computer Lab-I                                2       25     23    25     21     50     20                  64       B+       7 
+
+         GP101    General Proficiency                           1        -      -     -      -     100    83                  83       A+       9 
+
+Result:         Pass 
+
+Total No. of Credits registered: 22 
+
+Total No. of Credits earned:     22                                     * 26220010108003 * 
+
+SGPA:           6.82 
+<<<
