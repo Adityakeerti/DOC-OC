@@ -1,0 +1,92 @@
+{
+  "board": "CBSE",
+  "student_name": "SATYAM JHA",
+  "roll_number": "17610283",
+  "mother_name": "RINKU DEVI",
+  "father_name": "AMOD JHA",
+  "school_name": "DOON B PUB SR SEC SCHOOL SEHATPUR FARIDABAD HRY",
+  "school_code": "40793",
+  "subjects": [
+    {
+      "code": "301",
+      "name": "ENGLISH CORE",
+      "theory_marks": 74,
+      "practical_marks": 17,
+      "total_marks": 91,
+      "total_in_words": "NINE ONE",
+      "grade": "A2"
+    },
+    {
+      "code": "054",
+      "name": "BUSINESS STUDIES",
+      "theory_marks": 62,
+      "practical_marks": 20,
+      "total_marks": 82,
+      "total_in_words": "EIGHT TWO",
+      "grade": "B1"
+    },
+    {
+      "code": "055",
+      "name": "ACCOUNTANCY",
+      "theory_marks": 39,
+      "practical_marks": 19,
+      "total_marks": 58,
+      "total_in_words": "FIVE EIGHT",
+      "grade": "C2"
+    },
+    {
+      "code": "030",
+      "name": "ECONOMICS",
+      "theory_marks": 44,
+      "practical_marks": 20,
+      "total_marks": 64,
+      "total_in_words": "SIX FOUR",
+      "grade": "C1"
+    },
+    {
+      "code": "048",
+      "name": "PHYSICAL EDUCATION",
+      "theory_marks": 60,
+      "practical_marks": 30,
+      "total_marks": 90,
+      "total_in_words": "NINE ZERO",
+      "grade": "A2"
+    },
+    {
+      "code": "041",
+      "name": "MATHEMATICS",
+      "theory_marks": 26,
+      "practical_marks": 15,
+      "total_marks": 41,
+      "total_in_words": "FOUR ONE",
+      "grade": "D2"
+    },
+    {
+      "code": "500",
+      "name": "WORK EXPERIENCE",
+      "theory_marks": null,
+      "practical_marks": null,
+      "total_marks": null,
+      "total_in_words": null,
+      "grade": "B2"
+    },
+    {
+      "code": "502",
+      "name": "HEALTH & PHYSICAL EDUCATION",
+      "theory_marks": null,
+      "practical_marks": null,
+      "total_marks": null,
+      "total_in_words": null,
+      "grade": "A1"
+    },
+    {
+      "code": "503",
+      "name": "GENERAL STUDIES",
+      "theory_marks": null,
+      "practical_marks": null,
+      "total_marks": null,
+      "total_in_words": null,
+      "grade": "B2"
+    }
+  ]
+}

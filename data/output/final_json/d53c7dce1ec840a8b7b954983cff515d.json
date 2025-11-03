@@ -1,0 +1,30 @@
+{
+  "board": "ICSE",
+  "student_name": "MUGASATI SRIMEGHANA",
+  "unique_id": "6948120",
+  "mother_name": "MUGASATI ANANTHA LAKSHMI",
+  "father_name": "MUGASATI VENKATA RAJU",
+  "school_name": null,
+  "subjects": [
+    {
+      "name": "ENGLISH",
+      "marks": 91,
+      "marks_in_words": "NINE ONE"
+    },
+    {
+      "name": "MATHEMATICS",
+      "marks": 79,
+      "marks_in_words": "SEVEN NINE"
+    },
+    {
+      "name": "PHYSICS",
+      "marks": 83,
+      "marks_in_words": "EIGHT THREE"
+    },
+    {
+      "name": "CHEMISTRY",
+      "marks": 86,
+      "marks_in_words": "EIGHT SIX"
+    }
+  ]
+}
