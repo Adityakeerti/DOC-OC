@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-const API_URL = `http://${window.location.hostname}:8000/process`
+const API_BASE = `http://${window.location.hostname}:8000`
+const API_URL = `${API_BASE}/process`
 
 type Step = 'COURSE' | 'UPLOAD_10' | 'UPLOAD_12' | 'SEM_INPUT' | 'UPLOAD_SEM' | 'PROCESS' | 'PREVIEW' | 'REVIEW_ALL' | 'SUCCESS'
 type Course = 'UG' | 'PG'
 
 export default function App() {
   const [authed, setAuthed] = useState(false)
+  const [userEmail, setUserEmail] = useState<string>('')
   const [step, setStep] = useState<Step>('COURSE')
   const [course, setCourse] = useState<Course>('UG')
   const [file, setFile] = useState<File | null>(null)
@@ -141,7 +143,34 @@ export default function App() {
     }
     if (step === 'REVIEW_ALL') {
       if (!verified) { setError('Please verify all information before submitting.'); return }
-      setStep('SUCCESS')
+      
+      // Submit to database
+      try {
+        const marksheets = []
+        if (data10) marksheets.push({ ...data10, filename: '10th_marksheet.jpg' })
+        if (data12) marksheets.push({ ...data12, filename: '12th_marksheet.jpg' })
+        Object.entries(semesterResults).forEach(([sem, data]) => {
+          marksheets.push({ ...data, filename: `semester_${sem}_marksheet.jpg` })
+        })
+        
+        const response = await fetch(`${API_BASE}/submit_marksheets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_email: userEmail,
+            marksheets: marksheets
+          })
+        })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.detail || 'Failed to submit marksheets')
+        }
+        
+        setStep('SUCCESS')
+      } catch (e: any) {
+        setError(e.message || 'Failed to submit marksheets')
+      }
       return
     }
   }
@@ -239,7 +268,10 @@ export default function App() {
   }
 
   if (!authed) {
-    return <Login onSuccess={()=>setAuthed(true)} />
+    return <Login onSuccess={(email: string) => {
+      setAuthed(true)
+      setUserEmail(email)
+    }} />
   }
 
   return (
@@ -939,14 +971,54 @@ function CollapsibleMarksheet({ title, preview, full }: { title: string; preview
   )
 }
 
-function Login({ onSuccess }:{ onSuccess: ()=>void }){
+function Login({ onSuccess }:{ onSuccess: (email: string)=>void }){
   const [u, setU] = useState('')
+  const [email, setEmail] = useState('')
   const [p, setP] = useState('')
   const [err, setErr] = useState<string | null>(null)
-  const submit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false)
+  
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (u === 'user' && p === '123') onSuccess()
-    else setErr('Invalid credentials')
+    if (!u.trim() || !email.trim() || !p.trim()) {
+      setErr('Please fill all fields')
+      return
+    }
+    
+    setLoading(true)
+    setErr(null)
+    
+    try {
+      // Check if user exists
+      let response = await fetch(`${API_BASE}/user/${encodeURIComponent(email)}`)
+      
+      if (response.status === 404) {
+        // Create new user
+        response = await fetch(`${API_BASE}/create_user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, email: email })
+        })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.detail || 'Failed to create user')
+        }
+      } else if (!response.ok) {
+        throw new Error('Failed to check user')
+      }
+      
+      // Simple password check (in real app, use proper authentication)
+      if (p === '123') {
+        onSuccess(email)
+      } else {
+        setErr('Invalid password')
+      }
+    } catch (e: any) {
+      setErr(e.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
   }
   return (
     <div style={{ 
@@ -993,6 +1065,26 @@ function Login({ onSuccess }:{ onSuccess: ()=>void }){
               placeholder="Enter your username" 
               value={u} 
               onChange={e=>{setU(e.target.value); setErr(null)}}
+              disabled={loading}
+              style={{ 
+                width: '100%', 
+                padding: '12px 16px', 
+                fontSize: 15,
+                boxSizing: 'border-box',
+                border: '1px solid var(--border)',
+                borderRadius: '8px'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display:'block', marginBottom: 8, fontSize: 14, fontWeight: 500, color: '#334155' }}>Email</label>
+            <input 
+              className="edit-input" 
+              placeholder="Enter your email" 
+              type="email"
+              value={email} 
+              onChange={e=>{setEmail(e.target.value); setErr(null)}}
+              disabled={loading}
               style={{ 
                 width: '100%', 
                 padding: '12px 16px', 
@@ -1011,6 +1103,7 @@ function Login({ onSuccess }:{ onSuccess: ()=>void }){
               type="password" 
               value={p} 
               onChange={e=>{setP(e.target.value); setErr(null)}}
+              disabled={loading}
               style={{ 
                 width: '100%', 
                 padding: '12px 16px', 
@@ -1040,7 +1133,9 @@ function Login({ onSuccess }:{ onSuccess: ()=>void }){
               {err}
             </div>
           )}
-          <button className="primary" type="submit" style={{ marginTop: 8, padding: '14px', fontSize: 16, fontWeight: 600 }}>Sign In</button>
+          <button className="primary" type="submit" disabled={loading} style={{ marginTop: 8, padding: '14px', fontSize: 16, fontWeight: 600 }}>
+            {loading ? 'Please wait...' : 'Sign In'}
+          </button>
         </form>
       </div>
     </div>

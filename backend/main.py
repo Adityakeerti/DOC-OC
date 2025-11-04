@@ -1,6 +1,7 @@
-from fastapi import FastAPI, File, UploadFile, Query
+from fastapi import FastAPI, File, UploadFile, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 import shutil
 import os
 from pathlib import Path
@@ -45,6 +46,19 @@ try:
 except Exception as e:
     raise RuntimeError(f"Failed to load pipeline from {pipeline_path}: {e}")
 
+# Import database
+sys.path.insert(0, str(docroot / 'database'))
+from db_config import MarksheetDB
+
+# Request models
+class UserCreate(BaseModel):
+    username: str
+    email: str
+
+class SubmitData(BaseModel):
+    user_email: str
+    marksheets: list
+
 UPLOAD_DIR = docroot / 'backend' / 'uploads'
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -60,6 +74,7 @@ app.add_middleware(
 )
 
 processor = MarksheetProcessor()
+db = MarksheetDB()
 
 @app.post("/process")
 async def process_marksheet(
@@ -125,7 +140,17 @@ async def process_marksheet(
                 # Also allow board-name/type to frontend
                 return JSONResponse(content={"board": result.get("logo_detection", {}).get("board_name", ""), "data": data})
             else:
-                return JSONResponse(content={"error": "No data extracted"}, status_code=500)
+                # Return partial results even if extraction failed
+                board_name = result.get("logo_detection", {}).get("board_name", "")
+                return JSONResponse(content={
+                    "board": board_name,
+                    "data": {
+                        "board": board_name,
+                        "student_name": "OCR not available",
+                        "subjects": [],
+                        "note": "OCR extraction failed - please check API key"
+                    }
+                })
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
     finally:
@@ -133,10 +158,87 @@ async def process_marksheet(
             os.remove(temp_path)
         except Exception:
             pass
-# modify the flow like:
-# after processing one it should prompt to process next for 12th 
-# and then submit 
+@app.post("/create_user")
+async def create_user(user: UserCreate):
+    try:
+        user_id = db.create_user(user.username, user.email)
+        if user_id:
+            return {"user_id": user_id, "message": "User created successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create user")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-# also make the UI finisihed 
+@app.get("/user/{email}")
+async def get_user(email: str):
+    try:
+        user = db.get_user_by_email(email)
+        if user:
+            return user
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-# do last finishing processes
+@app.post("/submit_marksheets")
+async def submit_marksheets(data: SubmitData):
+    try:
+        # Get user
+        user = db.get_user_by_email(data.user_email)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        saved_count = 0
+        for marksheet in data.marksheets:
+            marksheet_data = marksheet.get("data", {})
+            filename = marksheet.get("filename", "")
+            
+            if "10th" in filename:
+                result = db.save_10th_marksheet(user["user_id"], marksheet_data)
+            elif "12th" in filename:
+                result = db.save_12th_marksheet(user["user_id"], marksheet_data)
+            elif "semester" in filename:
+                # Extract semester number from filename
+                import re
+                sem_match = re.search(r'semester_(\d+)', filename)
+                semester = int(sem_match.group(1)) if sem_match else 1
+                result = db.save_college_marksheet(user["user_id"], semester, marksheet_data)
+            else:
+                continue
+            
+            if result:
+                saved_count += 1
+        
+        return {
+            "message": f"Successfully saved {saved_count} marksheets",
+            "saved_count": saved_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/user_marksheets/{email}")
+async def get_user_marksheets(email: str):
+    try:
+        user = db.get_user_by_email(email)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        marksheets = db.get_user_marksheets(user["user_id"])
+        return marksheets
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/update_semester")
+async def update_semester(data: dict):
+    try:
+        user = db.get_user_by_email(data["email"])
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        success = db.update_user_semester(user["user_id"], data["semester"])
+        if success:
+            return {"message": "Semester updated successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update semester")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
