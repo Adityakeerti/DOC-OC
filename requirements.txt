@@ -9,3 +9,4 @@ torch>=2.2.0
 torchvision>=0.17.0
 python-dotenv>=1.0.1
 pdf2image>=1.17.0
+mysql-connector-python>=8.0.0

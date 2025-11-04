@@ -8,15 +8,18 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("UNSTRANCT_API_KEY")
-if not api_key:
-    print("Error: UNSTRANCT_API_KEY environment variable not found!")
-    print("Please create a .env file with your API key:")
-    print("UNSTRANCT_API_KEY=your_actual_api_key_here")
-    exit(1)
 
-# Initialize client
-client = LLMWhispererClientV2(base_url="https://llmwhisperer-api.us-central.unstract.com/api/v2",
-                              api_key=api_key)
+# Initialize client only if API key is available
+client = None
+if api_key and api_key != "your_api_key_here":
+    try:
+        client = LLMWhispererClientV2(base_url="https://llmwhisperer-api.us-central.unstract.com/api/v2",
+                                      api_key=api_key)
+    except Exception as e:
+        print(f"Warning: Failed to initialize OCR client: {e}")
+        client = None
+else:
+    print("Warning: No valid OCR API key found. OCR will be skipped.")
 
 # Create OCR results directory if it doesn't exist
 results_dir = "data/output/ocr_results"
@@ -75,17 +78,23 @@ def save_cropped_image(cropped_img, filename, table_type):
 
 def process_ocr(image_path):
     """Process OCR on an image and return extracted text"""
-    result = client.whisper(file_path=image_path)
+    if not client:
+        return "OCR not available - no valid API key"
     
-    while True:
-        status = client.whisper_status(whisper_hash=result['whisper_hash'])
-        if status['status'] == 'processed':
-            resultx = client.whisper_retrieve(whisper_hash=result['whisper_hash'])
-            break
-        time.sleep(5)
-    
-    extracted_text = resultx['extraction']['result_text']
-    return extracted_text
+    try:
+        result = client.whisper(file_path=image_path)
+        
+        while True:
+            status = client.whisper_status(whisper_hash=result['whisper_hash'])
+            if status['status'] == 'processed':
+                resultx = client.whisper_retrieve(whisper_hash=result['whisper_hash'])
+                break
+            time.sleep(5)
+        
+        extracted_text = resultx['extraction']['result_text']
+        return extracted_text
+    except Exception as e:
+        return f"OCR failed: {str(e)}"
 
 
 
@@ -118,7 +127,10 @@ def process_image_with_tables(image_path, json_path):
             marks_output_path = os.path.join(results_dir, f"{filename}_marks.txt")
             with open(marks_output_path, 'w', encoding='utf-8') as f:
                 f.write(marks_text)
-            print(f"  Saved marks table to: {marks_output_path}")
+            if "OCR not available" in marks_text or "OCR failed" in marks_text:
+                print(f"  Warning: {marks_text}")
+            else:
+                print(f"  Saved marks table to: {marks_output_path}")
         except Exception as e:
             print(f"  Error processing marks table: {e}")
         finally:
@@ -137,7 +149,10 @@ def process_image_with_tables(image_path, json_path):
             info_output_path = os.path.join(results_dir, f"{filename}_info.txt")
             with open(info_output_path, 'w', encoding='utf-8') as f:
                 f.write(info_text)
-            print(f"  Saved info table to: {info_output_path}")
+            if "OCR not available" in info_text or "OCR failed" in info_text:
+                print(f"  Warning: {info_text}")
+            else:
+                print(f"  Saved info table to: {info_output_path}")
         except Exception as e:
             print(f"  Error processing info table: {e}")
         finally:
