@@ -37,24 +37,22 @@ def get_max_confidence_table(tables, table_type):
 def crop_table_from_image(image_path, coordinates, margin_ratio: float = 0.10):
     """Crop table region from image using coordinates with optional margin expansion."""
     with Image.open(image_path) as img:
-        x1, y1 = int(coordinates["x1"]), int(coordinates["y1"])
-        x2, y2 = int(coordinates["x2"]), int(coordinates["y2"])
+        # Use full width of image to prevent horizontal clipping of columns
+        x1 = 0
+        x2 = img.width
 
-        # Expand by margin_ratio on each side
-        width = max(0, x2 - x1)
+        y1 = int(coordinates["y1"])
+        y2 = int(coordinates["y2"])
+
+        # Expand vertically by margin_ratio
         height = max(0, y2 - y1)
-        pad_x = int(round(width * margin_ratio))
         pad_y = int(round(height * margin_ratio))
 
-        x1 -= pad_x
         y1 -= pad_y
-        x2 += pad_x
         y2 += pad_y
 
         # Ensure coordinates are within image bounds
-        x1 = max(0, min(x1, img.width))
         y1 = max(0, min(y1, img.height))
-        x2 = max(0, min(x2, img.width))
         y2 = max(0, min(y2, img.height))
 
         cropped_img = img.crop((x1, y1, x2, y2))
@@ -117,51 +115,79 @@ def process_image_with_tables(image_path, json_path):
     info_table = get_max_confidence_table(tables, "Information Table")
     
     # Process Marks Table
+    print(f"  Processing Marks Table...")
+    cropped_img_marks = None
     if marks_table:
-        print(f"  Processing Marks Table (confidence: {marks_table['confidence']:.3f})")
-        cropped_img = crop_table_from_image(image_path, marks_table["coordinates"], margin_ratio=0.10)
-        temp_file = save_cropped_image(cropped_img, filename, "marks")
-        
+        print(f"    Marks Table detected (confidence: {marks_table['confidence']:.3f})")
+        cropped_img_marks = crop_table_from_image(image_path, marks_table["coordinates"], margin_ratio=0.10)
+    else:
+        print(f"    Marks Table NOT detected. Falling back to cropping bottom 65% of the image...")
+        try:
+            with Image.open(image_path) as img:
+                width, height = img.size
+                cropped_img_marks = img.crop((0, int(height * 0.35), width, height))
+        except Exception as e:
+            print(f"    Failed to crop bottom 65% of image: {e}")
+            cropped_img_marks = None
+
+    if cropped_img_marks:
+        temp_file = save_cropped_image(cropped_img_marks, filename, "marks")
         try:
             marks_text = process_ocr(temp_file)
             marks_output_path = os.path.join(results_dir, f"{filename}_marks.txt")
             with open(marks_output_path, 'w', encoding='utf-8') as f:
                 f.write(marks_text)
             if "OCR not available" in marks_text or "OCR failed" in marks_text:
-                print(f"  Warning: {marks_text}")
+                print(f"    Warning: {marks_text}")
             else:
-                print(f"  Saved marks table to: {marks_output_path}")
+                print(f"    Saved marks table to: {marks_output_path}")
         except Exception as e:
-            print(f"  Error processing marks table: {e}")
+            print(f"    Error processing marks table: {e}")
         finally:
             # Clean up temporary file
             if os.path.exists(temp_file):
                 os.remove(temp_file)
+    else:
+        print(f"    Skipping marks table processing as no image was available")
     
     # Process Information Table
+    print(f"  Processing Information Table...")
+    cropped_img_info = None
     if info_table:
-        print(f"  Processing Information Table (confidence: {info_table['confidence']:.3f})")
-        cropped_img = crop_table_from_image(image_path, info_table["coordinates"], margin_ratio=0.15)
-        temp_file = save_cropped_image(cropped_img, filename, "info")
-        
+        print(f"    Information Table detected (confidence: {info_table['confidence']:.3f})")
+        cropped_img_info = crop_table_from_image(image_path, info_table["coordinates"], margin_ratio=0.15)
+    else:
+        print(f"    Information Table NOT detected. Falling back to cropping top 40% of the image...")
+        try:
+            with Image.open(image_path) as img:
+                width, height = img.size
+                cropped_img_info = img.crop((0, 0, width, int(height * 0.40)))
+        except Exception as e:
+            print(f"    Failed to crop top 40% of image: {e}")
+            cropped_img_info = None
+
+    if cropped_img_info:
+        temp_file = save_cropped_image(cropped_img_info, filename, "info")
         try:
             info_text = process_ocr(temp_file)
             info_output_path = os.path.join(results_dir, f"{filename}_info.txt")
             with open(info_output_path, 'w', encoding='utf-8') as f:
                 f.write(info_text)
             if "OCR not available" in info_text or "OCR failed" in info_text:
-                print(f"  Warning: {info_text}")
+                print(f"    Warning: {info_text}")
             else:
-                print(f"  Saved info table to: {info_output_path}")
+                print(f"    Saved info table to: {info_output_path}")
         except Exception as e:
-            print(f"  Error processing info table: {e}")
+            print(f"    Error processing info table: {e}")
         finally:
             # Clean up temporary file
             if os.path.exists(temp_file):
                 os.remove(temp_file)
+    else:
+        print(f"    Skipping info table processing as no image was available")
     
     if not marks_table and not info_table:
-        print(f"  No tables found in {filename}")
+        print(f"  No tables detected at all by the model.")
 
 def list_available_images():
     """List all available images in the inputs folder"""

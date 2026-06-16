@@ -1,6 +1,8 @@
 """Table Detection Inference Script"""
 import os
 import torch
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image, ImageOps

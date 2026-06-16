@@ -135,7 +135,7 @@ export default function App() {
     setError(null)
     setResult(null)
     try {
-      const resp = await fetch(`/sample/${filename}`)
+      const resp = await fetch(`${API_BASE}/sample/${filename}`)
       if (!resp.ok) throw new Error(`Sample file ${filename} not found.`)
       const blob = await resp.blob()
       const sampleFile = new File([blob], filename, { type: blob.type || 'image/png' })

@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-const API_BASE = `http://${window.location.hostname}:8000`
+const API_BASE =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? `http://${window.location.hostname}:8000`
+    : (import.meta as any).env?.VITE_API_BASE || window.location.origin;
 const API_URL = `${API_BASE}/process`
+
 
 type Step = 'COURSE' | 'UPLOAD_10' | 'UPLOAD_12' | 'SEM_INPUT' | 'UPLOAD_SEM' | 'PROCESS' | 'PREVIEW' | 'REVIEW_ALL' | 'SUCCESS'
 type Course = 'UG' | 'PG'
@@ -143,33 +147,30 @@ export default function App() {
     }
     if (step === 'REVIEW_ALL') {
       if (!verified) { setError('Please verify all information before submitting.'); return }
-      
-      // Submit to database
+
+      // Submit all marksheet data to backend (saved as JSON in data/output/)
       try {
-        const marksheets = []
-        if (data10) marksheets.push({ ...data10, filename: '10th_marksheet.jpg' })
-        if (data12) marksheets.push({ ...data12, filename: '12th_marksheet.jpg' })
+        const marksheets: any[] = []
+        if (data10) marksheets.push({ type: '10th', ...data10 })
+        if (data12) marksheets.push({ type: '12th', ...data12 })
         Object.entries(semesterResults).forEach(([sem, data]) => {
-          marksheets.push({ ...data, filename: `semester_${sem}_marksheet.jpg` })
+          marksheets.push({ type: `semester_${sem}`, ...data })
         })
-        
-        const response = await fetch(`${API_BASE}/submit_marksheets`, {
+
+        const response = await fetch(`${API_BASE}/submit`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_email: userEmail,
-            marksheets: marksheets
-          })
+          body: JSON.stringify({ marksheets })
         })
-        
+
         if (!response.ok) {
           const errorData = await response.json()
           throw new Error(errorData.detail || 'Failed to submit marksheets')
         }
-        
+
         setStep('SUCCESS')
       } catch (e: any) {
-        setError(e.message || 'Failed to submit marksheets')
+        setError(e.message || 'Failed to submit — is the backend running?')
       }
       return
     }
@@ -275,7 +276,7 @@ export default function App() {
   }
 
   return (
-    <div>
+    <div className="fade-in">
       {step !== 'SUCCESS' && (
         <>
           <TopNav showBack={step !== 'COURSE'} onBack={goBack} />
@@ -284,7 +285,8 @@ export default function App() {
             <StepIndicator current={step} lastMainStep={lastMainStep} />
 
             <div className="bento">
-              <section className={"card " + ((step === 'COURSE' || step === 'SEM_INPUT') ? 'bento-a' : 'bento-full')}>
+              <section className={"card " + ((step === 'COURSE' || step === 'SEM_INPUT') ? 'bento-a' : 'bento-full')} style={{ transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+                <div key={step} className="fade-in" style={{ display: 'grid', gap: 16 }}>
                 {step === 'COURSE' && (
               <div style={{ display:'grid', gap:20 }}>
                 <h3 style={{ margin: 0 }}>Select Course</h3>
@@ -440,7 +442,7 @@ export default function App() {
                 )}
               </div>
             )}
-                {step !== 'SUCCESS' && (
+                {step !== ('SUCCESS' as any) && (
                   <div className="center">
                     <button className="primary" onClick={onContinue} disabled={loading}>
                       {step==='COURSE' && 'Continue'}
@@ -454,9 +456,10 @@ export default function App() {
                     </button>
                   </div>
                 )}
+                </div>
               </section>
               {(step === 'COURSE' || step === 'SEM_INPUT') && (
-                <section className="card bento-b">
+                <section className="card bento-b fade-in">
                   <h3>Guidance</h3>
                   <ul style={{ margin: 0, paddingLeft: 18, color: '#64748B' }}>
                     <li>Use high-quality scans for best results.</li>
@@ -517,7 +520,7 @@ function SuccessAnimation() {
           </svg>
         </div>
         <h2 style={{ margin: 0, marginBottom: 12, fontSize: 28, fontWeight: 700, color: '#1e293b' }}>Submission Successful!</h2>
-        <p style={{ color: '#64748B', margin: 0, marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>All marksheets have been processed and saved successfully.</p>
+        <p style={{ color: '#64748B', margin: 0, marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>All marksheets have been processed and saved to the output folder.</p>
         <div style={{ 
           fontSize: 13, 
           color: '#94A3B8', 
@@ -977,48 +980,34 @@ function Login({ onSuccess }:{ onSuccess: (email: string)=>void }){
   const [p, setP] = useState('')
   const [err, setErr] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!u.trim() || !email.trim() || !p.trim()) {
       setErr('Please fill all fields')
       return
     }
-    
+
     setLoading(true)
     setErr(null)
-    
+
+    // Verify backend is reachable
     try {
-      // Check if user exists
-      let response = await fetch(`${API_BASE}/user/${encodeURIComponent(email)}`)
-      
-      if (response.status === 404) {
-        // Create new user
-        response = await fetch(`${API_BASE}/create_user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: u, email: email })
-        })
-        
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.detail || 'Failed to create user')
-        }
-      } else if (!response.ok) {
-        throw new Error('Failed to check user')
-      }
-      
-      // Simple password check (in real app, use proper authentication)
-      if (p === '123') {
-        onSuccess(email)
-      } else {
-        setErr('Invalid password')
-      }
-    } catch (e: any) {
-      setErr(e.message || 'Login failed')
-    } finally {
+      const res = await fetch(`${API_BASE}/health`)
+      if (!res.ok) throw new Error('Backend not reachable')
+    } catch {
+      setErr('Cannot connect to backend at ' + API_BASE + '. Is it running?')
       setLoading(false)
+      return
     }
+
+    // Local auth — password must be "123"
+    if (p === '123') {
+      onSuccess(email)
+    } else {
+      setErr('Invalid password')
+    }
+    setLoading(false)
   }
   return (
     <div style={{ 
@@ -1030,7 +1019,7 @@ function Login({ onSuccess }:{ onSuccess: (email: string)=>void }){
       padding: '20px',
       boxSizing: 'border-box'
     }}>
-      <div className="card" style={{ 
+      <div className="card fade-in" style={{ 
         width: '100%',
         maxWidth: 420,
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)',

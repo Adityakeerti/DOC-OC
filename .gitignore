@@ -30,3 +30,13 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Frontend build outputs
+dist/
+dist-ssr/
+build/
+out/
+
+# Local temporary files
+temp_*
+*.log

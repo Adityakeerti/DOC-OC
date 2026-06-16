@@ -14,10 +14,11 @@ if __name__ == "__main__":
     # Run on 0.0.0.0 to accept connections from any IP address
     # This allows access from phones and other devices on the same network
     uvicorn.run(
-        "main:app",
+        "backend.main:app",
         host="0.0.0.0",  # Bind to all interfaces, not just localhost
         port=8000,
         reload=True,  # Auto-reload on code changes
-        app_dir=str(backend_dir)  # Set app directory so imports work correctly
+        app_dir=str(backend_dir.parent)  # Set app directory to project root
     )
+
 
