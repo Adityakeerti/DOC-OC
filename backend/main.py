@@ -63,7 +63,9 @@ app.add_middleware(
 )
 
 from fastapi.staticfiles import StaticFiles
-app.mount("/sample", StaticFiles(directory=str(docroot / 'sample')), name="sample")
+_sample_dir = docroot / 'sample'
+if _sample_dir.exists():
+    app.mount("/sample", StaticFiles(directory=str(_sample_dir)), name="sample")
 
 processor = MarksheetProcessor()
 
