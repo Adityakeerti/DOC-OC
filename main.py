@@ -139,24 +139,29 @@ def create_annotated_image(image_path, logo_result, face_result, table_result, o
 
 class MarksheetProcessor:
     """Complete marksheet processing pipeline"""
-    
-    def __init__(self, logo_model_path="models\\logo.pt", table_model_path="models\\tt_finetuned"):
+
+    # Resolve model paths relative to this file so they work on any OS
+    _ROOT = Path(__file__).resolve().parent
+    _DEFAULT_LOGO  = str(_ROOT / 'models' / 'logo.pt')
+    _DEFAULT_TABLE = str(_ROOT / 'models' / 'tt_finetuned')
+
+    def __init__(self, logo_model_path=None, table_model_path=None):
         """
         Initialize the marksheet processor
-        
+
         Args:
             logo_model_path: Path to logo detection model
             table_model_path: Path to table detection model
         """
-        self.logo_model_path = logo_model_path
-        self.table_model_path = table_model_path
-        
+        self.logo_model_path  = logo_model_path  or self._DEFAULT_LOGO
+        self.table_model_path = table_model_path or self._DEFAULT_TABLE
+
         # Verify model paths exist
-        if not os.path.exists(logo_model_path):
-            print(f"Warning: Logo model not found at {logo_model_path}")
-        
-        if not os.path.exists(table_model_path):
-            print(f"Warning: Table model not found at {table_model_path}")
+        if not os.path.exists(self.logo_model_path):
+            print(f"Warning: Logo model not found at {self.logo_model_path}")
+
+        if not os.path.exists(self.table_model_path):
+            print(f"Warning: Table model not found at {self.table_model_path}")
     
     def process_single_marksheet(self, image_path, output_dir=None, save_intermediate=False):
         """
@@ -500,9 +505,11 @@ def main():
     parser.add_argument("--image", type=str, help="Path to single marksheet image")
     parser.add_argument("--dir", type=str, help="Path to directory of marksheet images")
     parser.add_argument("--output", type=str, help="Output directory for results")
-    parser.add_argument("--logo-model", type=str, default="models\\logo.pt",
+    parser.add_argument("--logo-model", type=str,
+                       default=str(Path(__file__).resolve().parent / 'models' / 'logo.pt'),
                        help="Path to logo detection model")
-    parser.add_argument("--table-model", type=str, default="models\\tt_finetuned",
+    parser.add_argument("--table-model", type=str,
+                       default=str(Path(__file__).resolve().parent / 'models' / 'tt_finetuned'),
                        help="Path to table detection model")
     parser.add_argument("--save-intermediate", action="store_true",
                        help="Save intermediate processing steps")
