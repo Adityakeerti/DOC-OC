@@ -16,8 +16,14 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
       - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://oauth2:${HF_TOKEN}@huggingface.co/spaces/adityacodes404/doc-oc main
+          git remote add hf https://oauth2:${HF_TOKEN}@huggingface.co/spaces/adityacodes404/doc-oc
+          git push hf main --force
