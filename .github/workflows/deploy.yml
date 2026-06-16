@@ -26,5 +26,13 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git remote add hf https://oauth2:${HF_TOKEN}@huggingface.co/spaces/adityacodes404/doc-oc
-          git lfs push hf --all
+          # Disable unsupported LFS locking API on HF
+          git config lfs.https://huggingface.co/spaces/adityacodes404/doc-oc.git/info/lfs.locksverify false
+          # Only push LFS objects if model files changed in this commit
+          if git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -q "^models/"; then
+            echo "Model files changed — pushing LFS objects..."
+            git lfs push hf --all
+          else
+            echo "No model changes — skipping LFS push."
+          fi
           git push hf main --force
