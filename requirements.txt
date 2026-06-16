@@ -12,5 +12,6 @@ pdf2image>=1.17.0
 mysql-connector-python>=8.0.0
 python-multipart>=0.0.18
 timm>=0.9.12
+unstract-llmwhisperer>=2.0.0
 
 

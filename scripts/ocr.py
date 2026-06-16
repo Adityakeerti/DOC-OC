@@ -2,16 +2,22 @@ import time
 import json
 import os
 from PIL import Image
-from unstract.llmwhisperer import LLMWhispererClientV2
 from dotenv import load_dotenv
+
+# Lazy import — package may not be installed in all environments
+try:
+    from unstract.llmwhisperer import LLMWhispererClientV2
+    _unstract_available = True
+except ImportError:
+    _unstract_available = False
 
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("UNSTRANCT_API_KEY")
 
-# Initialize client only if API key is available
+# Initialize client only if package installed and API key is available
 client = None
-if api_key and api_key != "your_api_key_here":
+if _unstract_available and api_key and api_key != "your_api_key_here":
     try:
         client = LLMWhispererClientV2(base_url="https://llmwhisperer-api.us-central.unstract.com/api/v2",
                                       api_key=api_key)
@@ -19,7 +25,10 @@ if api_key and api_key != "your_api_key_here":
         print(f"Warning: Failed to initialize OCR client: {e}")
         client = None
 else:
-    print("Warning: No valid OCR API key found. OCR will be skipped.")
+    if not _unstract_available:
+        print("Warning: unstract-llmwhisperer not installed. OCR will be skipped.")
+    else:
+        print("Warning: No valid OCR API key found. OCR will be skipped.")
 
 # Create OCR results directory if it doesn't exist
 results_dir = "data/output/ocr_results"
