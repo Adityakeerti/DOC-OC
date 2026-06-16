@@ -1,3 +1,12 @@
+---
+title: DOC OC
+emoji: 📄
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 ## DOC OC Final
 
 Simple end-to-end marksheet extraction system:
@@ -79,7 +88,7 @@ python main.py --image path/to/image.jpg --output data/output
 ### Environment
 Create `.env` (root) if using cloud OCR:
 ```
-UNSTRANCT_API_KEY=your_api_key_here
+UNSTRANCT_API_KEY=get_key_from_the_site
 ```
 If not set, the app skips OCR gracefully.
 
