@@ -550,3 +550,9 @@ async def submit_marksheets(payload: dict):
         return {"status": "ok", "message": "Marksheets saved successfully", "file": out_file.name}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Serve React frontend (must be LAST — catches all unmatched routes) ────────
+_frontend_dist = docroot / 'frontend_dist'
+if _frontend_dist.exists():
+    app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="frontend")
