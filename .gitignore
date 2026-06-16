@@ -1,14 +1,22 @@
+# ======================
 # Data folders
+# ======================
 data/input/
 data/output/
 
-# Backend uploads
+# Backend generated files
 backend/uploads/
 
+# ======================
 # Environment files
+# ======================
 .env
+.env.*
+!.env.example
 
+# ======================
 # Python
+# ======================
 __pycache__/
 *.pyc
 *.pyo
@@ -16,27 +24,59 @@ __pycache__/
 .Python
 *.so
 .pytest_cache/
+.venv/
+venv/
 
-# Node modules
+# ======================
+# Node
+# ======================
 node_modules/
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
+# ======================
 # IDE
+# ======================
 .vscode/
 .idea/
 *.swp
 *.swo
 
+# ======================
 # OS
+# ======================
 .DS_Store
 Thumbs.db
 
-# Frontend build outputs
+# ======================
+# Frontend builds
+# ======================
 dist/
 dist-ssr/
 build/
 out/
 
-# Local temporary files
+# ======================
+# Temporary files
+# ======================
 temp_*
-*.log
+*.log
+
+# ======================
+# Samples / test assets
+# ======================
+sample/
+frontend(demo)/public/sample/
+
+# ======================
+# Large files (handled by LFS)
+# ======================
+# Do NOT ignore:
+# models/logo.pt
+# models/**/*.safetensors
+
+# ======================
+# Uploaded archives
+# ======================
+*.zip
