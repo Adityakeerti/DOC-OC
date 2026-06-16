@@ -1,0 +1,25 @@
+name: Sync to Hugging Face Hub
+
+on:
+  push:
+    branches: [main]
+  # Allows manual triggers from the GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          # REPLACE 'YOUR_HF_USERNAME' AND 'YOUR_SPACE_NAME' in the URL below with your actual details
+          HF_SPACE_URL: "huggingface.co/spaces/adityacodes404/doc-oc"
+        run: |
+          git push --force https://oauth2:$HF_TOKEN@$HF_SPACE_URL main
